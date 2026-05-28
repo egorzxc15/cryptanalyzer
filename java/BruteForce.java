@@ -30,6 +30,7 @@ public class BruteForce {
                     bestResult = decrypted;
                 }
             } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
 
@@ -46,12 +47,13 @@ public class BruteForce {
         for (int key = 1; key < alphabet.length; key++) {
             try {
                 String decrypted = cipher.decrypt(encryptedText, key);
-                int spaces = countChar(decrypted, ' ');
+                int spaces = countSpaces(decrypted);
                 if (spaces > maxSpaces) {
                     maxSpaces = spaces;
                     bestResult = decrypted;
                 }
             } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
 
@@ -73,10 +75,10 @@ public class BruteForce {
         return sb.toString();
     }
 
-    private int countChar(String text, char target) {
+    private int countSpaces(String text) {
         int count = 0;
         for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == target) count++;
+            if (text.charAt(i) == ' ') count++;
         }
         return count;
     }

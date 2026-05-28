@@ -6,13 +6,13 @@ import java.nio.charset.StandardCharsets;
 
 public class FileManager {
     public String readFile(String filePath) throws IOException {
-        Path path = Path.get(filePath);
-        byte[] bytes = Files.readAllBytes(path); // читаем весь файл как массив байт
-        return new String(bytes, StandardCharsets.UTF_8); // преобразуем строку
+        Path path = Paths.get(filePath);
+        byte[] bytes = Files.readAllBytes(path);
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     public void writeFile(String content, String filePath) throws IOException {
-        Path path = Path.get(filePath);
-        Files.write(path, content.getBytes(StandardCharsets.UTF_8));
+        Path path = Paths.get(filePath);
+        Files.writeString(path, content);
     }
 }

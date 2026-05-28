@@ -1,32 +1,34 @@
+import java.util.HashMap;
+import java.util.Map;
+
 public class Cipher {
     private final char[] alphabet;
+    private final Map<Character, Integer> charToIndex;
 
     public Cipher(char[] alphabet) {
         this.alphabet = alphabet;
+        this.charToIndex = new HashMap<>();
+        for (int i = 0; i < alphabet.length; i++) {
+            charToIndex.put(alphabet[i], i);
+        }
     }
 
-    // Шифрование одного символа, сдвиг вперёд на key позиций
     private char shiftChar(char ch, int key) {
-        // Ищем индекс символа в алфавите
-        for (int i = 0; i < alphabet.length; i++) {
-            if (alphabet[i] == ch) {
-                int newIndex = (i + key) % alphabet.length; // циклический сдвиг
-                if (newIndex < 0) { // на случай отрицательного key в будущем
-                    newIndex += alphabet.length;
-                }
-                return alphabet[newIndex];
-            }
+        Integer index = charToIndex.get(ch);   // O(1) вместо цикла
+        if (index == null) return ch;          // нет в алфавите – возвращаем как есть
+        int newIndex = (index + key) % alphabet.length;
+        if (newIndex < 0) {
+            newIndex += alphabet.length;
         }
-        // если символа нет в алфавите, возвращаем как есть (при шифровании пропускаем)
-        return ch;
+        return alphabet[newIndex];
     }
 
     public String encrypt(String text, int key) {
-        String lowerText = text.toLowerCase(); // приводим к нижнему регистру
+        String lowerText = text.toLowerCase();
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < lowerText.length(); i++) {
             char original = lowerText.charAt(i);
-            if (contains(original)) { // символ есть в алфавите, шифруем
+            if (charToIndex.containsKey(original)) {
                 result.append(shiftChar(original, key));
             }
         }
@@ -34,32 +36,18 @@ public class Cipher {
     }
 
     public String decrypt(String text, int key) {
-        // расшифровка = шифрование с отрицательным ключом
         String lowerText = text.toLowerCase();
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < lowerText.length(); i++) {
             char original = lowerText.charAt(i);
-            if (contains(original)) {
-                // для расшифровки сдвиг в обратную сторону
+            if (charToIndex.containsKey(original)) {
                 result.append(shiftChar(original, -key));
             } else {
-                throw new IllegalArgumentException("В зашифрованном тексте найден недопустимый символ:'" + original + "'"
+                throw new IllegalArgumentException(
+                        "В зашифрованном тексте найден недопустимый символ: '" + original + "'"
                 );
             }
         }
         return result.toString();
-    }
-
-    // Проверка, есть ли символ в алфавите
-    private boolean contains(char c) {
-        for (char a : alphabet) {
-            if (a == c) return true;
-        }
-        return false;
-    }
-    // Геттер для алфавита
-
-    public char[] getAlphabet() {
-        return alphabet;
     }
 }
